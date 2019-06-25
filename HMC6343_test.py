@@ -364,7 +364,6 @@ class HMC6343(object):
             return
         else:
             with smbus2.SMBusWrapper(1) as bus:
-                print("MODE: ", mode, type(mode))
                 temporary_data_write = bus.write_i2c_block_data(self.I2C_ADDR, 0, [mode])
                 sleep(self.TD_ENTER_MODE)
 
