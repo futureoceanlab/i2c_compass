@@ -201,7 +201,7 @@ class HMC6343(object):
     def readHeading(self):
 
 
-        sleep.(self.TD_DEFAULT)
+        sleep(self.TD_DEFAULT)
         with smbus2.SMBusWrapper(1) as bus:
 
             temporary_data_write = bus.write_i2c_block_data(self.I2C_ADDR, 0, self.POST_HEADING)
