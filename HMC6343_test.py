@@ -1,11 +1,12 @@
 #!usr/bin/python3
 
 """Python Library for HMC6343 on Raspberry Pi"""
-import sys
-sys.path.append(r'/home/pi/Desktop/quick2wire-python-api/')
+# import sys
+# sys.path.append(r'/home/pi/Desktop/quick2wire-python-api/')
 
-import quick2wire.i2c as i2c
+# import quick2wire.i2c as i2c
 from time import sleep
+import smbus2
 
 __author__ = "Chethan Shettar"
 __copyright__ = "Copyright 2016, Meuleman Electronics"
