@@ -199,6 +199,33 @@ class HMC6343(object):
             print("MagZ = %f" %magZ)
 
     def readHeading(self):
+
+
+        sleep.(self.TD_DEFAULT)
+        with smbus2.SMBusWrapper(1) as bus:
+
+            temporary_data_write = bus.write_i2c_block_data(self.I2C_ADDR, 0, self.POST_HEADING)
+            sleep(self.TD_POST_DATA)
+            readValues = bus.read_i2c_block_data(self.I2C_ADDR, 0 , self.BLEN_POST_DATA)
+            print("heading: ", readValues)
+
+            heading = (256*readValues[0][0] + readValues[0][1])/10.0
+
+            pitch = (256*readValues[0][2] + readValues[0][3])
+            if(pitch & 0x01<<15 != 0x00):
+                pitch = (-(self.MAX_16_BIT+1) + pitch)
+            pitch = pitch/10.0
+            
+            roll = (256*readValues[0][4] + readValues[0][5])
+            if(roll & 0x01<<15 != 0x00):
+                roll = (-(self.MAX_16_BIT+1) + roll)
+            roll = roll/10.0
+
+            print("Heading = %f" %heading)
+            return heading
+
+
+
         sleep(self.TD_DEFAULT)
         with i2c.I2CMaster() as bus:
             bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.POST_HEADING))
