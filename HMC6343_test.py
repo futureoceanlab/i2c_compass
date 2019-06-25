@@ -1,6 +1,8 @@
 #!usr/bin/python3
 
 """Python Library for HMC6343 on Raspberry Pi"""
+import sys
+sys.path.append(r'/home/pi/Desktop/quick2wire-python-api/')
 
 import quick2wire.i2c as i2c
 from time import sleep
