@@ -207,16 +207,16 @@ class HMC6343(object):
             temporary_data_write = bus.write_i2c_block_data(self.I2C_ADDR, 0, self.POST_HEADING)
             sleep(self.TD_POST_DATA)
             readValues = bus.read_i2c_block_data(self.I2C_ADDR, 0 , self.BLEN_POST_DATA)
-            print("heading: ", readValues)
+            print("readVals: ", readValues)
 
-            heading = (256*readValues[0][0] + readValues[0][1])/10.0
+            heading = (256*readValues[0] + readValues[1])/10.0
 
-            pitch = (256*readValues[0][2] + readValues[0][3])
+            pitch = (256*readValues[2] + readValues[3])
             if(pitch & 0x01<<15 != 0x00):
                 pitch = (-(self.MAX_16_BIT+1) + pitch)
             pitch = pitch/10.0
             
-            roll = (256*readValues[0][4] + readValues[0][5])
+            roll = (256*readValues[4] + readValues[5])
             if(roll & 0x01<<15 != 0x00):
                 roll = (-(self.MAX_16_BIT+1) + roll)
             roll = roll/10.0
@@ -471,5 +471,5 @@ if __name__ == '__main__':
     compass = HMC6343()
     while True:
         compass.readHeading()
-        sleep(5)
+        sleep(1)
 
