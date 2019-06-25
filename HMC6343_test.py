@@ -364,14 +364,28 @@ class HMC6343(object):
             return
         else:
             with smbus2.SMBusWrapper(1) as bus:
-                temporary_data_write = bus.write_i2c_block_data(self.I2C_ADDR, 0, self.POST_HEADING)
+                temporary_data_write = bus.write_i2c_block_data(self.I2C_ADDR, 0, mode)
                 sleep(self.TD_ENTER_MODE)
 
+                OPMode1 = self.readOPMode1
+
+                if(mode == self.ENTER_RUN):
+                    if(OPMode1 & 0x10 == 0):
+                        successFlag = 0
+                elif(mode == self.ENTER_STANDBY):
+                    if(OPMode1 & 0x08 == 0):
+                        successFlag = 0          
+                else:
+                    print("Mode value not valid")
+
+                if(successFlag == 0):
+                    print("Failed to set mode")
+                else:
+                    print("Mode set successfully") 
 
 
 
-
-
+            print("HEREREREREREKLJ:LJ:J:KJ:KJ:J:KJ:J:J")
             with i2c.I2CMaster() as bus:
                 bus.transaction(i2c.writing_bytes(self.I2C_ADDR, mode))
                 sleep(self.TD_ENTER_MODE)
