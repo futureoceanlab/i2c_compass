@@ -108,3 +108,11 @@ void printAccelData()
   Serial.print((float) compass.accelZ/1024.0);Serial.println("g");
   Serial.println();
 }
+
+int main()
+{
+  while(true){
+    loop()
+  }
+  return 0
+}
