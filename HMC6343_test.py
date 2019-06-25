@@ -291,6 +291,16 @@ class HMC6343(object):
 
     def readOPMode1(self):
         sleep(self.TD_DEFAULT)
+
+        with smbus2.SMBusWrapper(1) as bus:
+            temporary_data_write = bus.write_i2c_block_data(self.I2C_ADDR, 0, self.POST_OPMODE1)
+            sleep(self.TD_POST_DATA)
+            readValues = bus.read_i2c_block_data(self.I2C_ADDR, 0 , self.BLEN_EEPROM_REG)
+            print("Value of OpMode1= 0x%02x" %readValues[0][0])
+            return readValues[0][0]
+
+
+
         with i2c.I2CMaster() as bus:
             bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.POST_OPMODE1))
             sleep(self.TD_POST_DATA)
@@ -353,6 +363,15 @@ class HMC6343(object):
             enterSleep()
             return
         else:
+            with smbus2.SMBusWrapper(1) as bus:
+                temporary_data_write = bus.write_i2c_block_data(self.I2C_ADDR, 0, self.POST_HEADING)
+                sleep(self.TD_ENTER_MODE)
+
+
+
+
+
+
             with i2c.I2CMaster() as bus:
                 bus.transaction(i2c.writing_bytes(self.I2C_ADDR, mode))
                 sleep(self.TD_ENTER_MODE)
