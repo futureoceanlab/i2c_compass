@@ -238,20 +238,20 @@ class HMC6343(object):
             # temp = bus.read_i2c_block_data(self.POST_HEADING, 0, self.BLEN_POST_DATA)
             # print('temp: ', temp)
 
-            heading = (256*readValues[0] + readValues[1])/10.0
+            # heading = (256*readValues[0] + readValues[1])/10.0
 
-            pitch = (256*readValues[2] + readValues[3])
-            if(pitch & 0x01<<15 != 0x00):
-                pitch = (-(self.MAX_16_BIT+1) + pitch)
-            pitch = pitch/10.0
+            # pitch = (256*readValues[2] + readValues[3])
+            # if(pitch & 0x01<<15 != 0x00):
+            #     pitch = (-(self.MAX_16_BIT+1) + pitch)
+            # pitch = pitch/10.0
             
-            roll = (256*readValues[4] + readValues[5])
-            if(roll & 0x01<<15 != 0x00):
-                roll = (-(self.MAX_16_BIT+1) + roll)
-            roll = roll/10.0
+            # roll = (256*readValues[4] + readValues[5])
+            # if(roll & 0x01<<15 != 0x00):
+            #     roll = (-(self.MAX_16_BIT+1) + roll)
+            # roll = roll/10.0
 
-            print("Heading = %f" %heading)
-            return heading
+            # print("Heading = %f" %heading)
+            # return heading
 
 
             #old
