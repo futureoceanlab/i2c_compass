@@ -324,11 +324,7 @@ class SMBus(object):
             read_write=I2C_SMBUS_READ, command=0, size=length
         )
         ioctl(self.fd, I2C_SMBUS, msg)
-        print("MESSAGE: ")
-        print(msg.data.contents.byte)
-        print(msg.data.contents.block)
-        print(msg.data.contents.word)
-        return msg.data.contents.byte
+        print("MESSAGE: ", msg.data.contents.byte, msg.data.contents.word, msg.data.contents.block)
         return msg.data.contents.block[1:length + 1]
 
     def write_byte(self, i2c_addr, value, force=None):
