@@ -229,7 +229,7 @@ class HMC6343(object):
         sleep(self.TD_DEFAULT)
         with smbus2.SMBusWrapper(1) as bus:
 
-            bus.write_i2c_block_data(self.I2C_ADDR, self.POST_HEADING)
+            # bus.write_i2c_block_data(self.I2C_ADDR, self.POST_HEADING)
             sleep(self.TD_POST_DATA)
             readValues = bus.read_i2c_block_data(self.I2C_ADDR, self.POST_HEADING , self.BLEN_POST_DATA)
             print("readVals: ", readValues)
