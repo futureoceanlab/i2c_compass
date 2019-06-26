@@ -321,13 +321,10 @@ class SMBus(object):
             raise ValueError("Desired block length over %d bytes" % I2C_SMBUS_BLOCK_MAX)
         self._set_address(i2c_addr, force=force)
         msg = i2c_smbus_ioctl_data.create(
-            read_write=I2C_SMBUS_READ, command=0, size=length
+            read_write=I2C_SMBUS_READ, command=0, size=3
         )
-        msg.data.contents.byte = 6
-        # msg.data.contents.block = [1,2,3,4,5,6]
         ioctl(self.fd, I2C_SMBUS, msg)
         print("MESSAGE: ")
-        msg.data.contents.byte = 6
         print(msg.data.contents.block)
         print(msg.data.contents.word)
         print(msg.data.contents.byte)
