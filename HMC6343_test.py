@@ -325,7 +325,7 @@ class HMC6343(object):
             sleep(self.TD_POST_DATA)
             readValues = bus.read_byte(self.I2C_ADDR)
             print("Value of OpMode1= 0x%02x" %readValues)
-            return readValues[0]
+            return readValues
 
 
         #old
