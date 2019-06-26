@@ -323,7 +323,7 @@ class SMBus(object):
         msg = i2c_smbus_ioctl_data.create(
             read_write=I2C_SMBUS_READ, command=0, size=length
         )
-        # msg.data.contents.byte = length
+        msg.data.contents.byte = length
         ioctl(self.fd, I2C_SMBUS, msg)
         print("MESSAGE: ")
         print(msg.data.contents.block)
