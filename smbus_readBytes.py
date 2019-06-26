@@ -327,6 +327,7 @@ class SMBus(object):
         # msg.data.contents.block = [1,2,3,4,5,6]
         ioctl(self.fd, I2C_SMBUS, msg)
         print("MESSAGE: ")
+        msg.data.contents.byte = 6
         print(msg.data.contents.block)
         print(msg.data.contents.word)
         print(msg.data.contents.byte)
