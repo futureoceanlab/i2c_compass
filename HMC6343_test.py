@@ -73,7 +73,7 @@ class HMC6343(object):
 ##  HMC6343 TIME DELAY IN SECONDS
     TD_PWR_UP = 0.5
     TD_RESET = 0.5
-    TD_POST_DATA = 0.1
+    TD_POST_DATA = 0.01
     TD_ENTER_MODE = 0.01
     TD_SET_ORIENTATION = 0.01
     TD_ENTER_SLEEP = 0.01
@@ -229,7 +229,7 @@ class HMC6343(object):
         sleep(self.TD_DEFAULT)
         with smbus2.SMBusWrapper(1) as bus:
 
-            bus.write_i2c_block_data(self.I2C_ADDR, 0, [self.POST_HEADING])
+            bus.write_i2c_block_data(self.I2C_ADDR, self.POST_HEADING)
             sleep(self.TD_POST_DATA)
             readValues = bus.read_i2c_block_data(self.I2C_ADDR, 0 , self.BLEN_POST_DATA)
             print("readVals: ", readValues)
