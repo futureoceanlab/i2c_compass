@@ -232,7 +232,7 @@ class HMC6343(object):
             bus.write_byte(self.I2C_ADDR,self.POST_HEADING)
             sleep(self.TD_POST_DATA)
             # readValues = bus.read_byte(self.I2C_ADDR)
-            readValues = bus.read_bytes(self.I2C_ADDR, 7)
+            readValues = bus.read_bytes(self.I2C_ADDR, self.BLEN_POST_DATA)
             print("readVals: ", readValues)
 
 
