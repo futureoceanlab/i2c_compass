@@ -109,27 +109,52 @@ class HMC6343(object):
 
     def readEEPROM(self, reg):
         sleep(self.TD_DEFAULT)
-        with i2c.I2CMaster() as bus:
-            bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.READ_EEPROM, reg))
+
+        with smbus2.SMBusWrapper(1) as bus:
+            bus.write_i2c_block_data(self.I2C_ADDR, 0, [self.READ_EEPROM]) #not sure about this one
             sleep(self.TD_READ_EEPROM)
-            readValue = bus.transaction(i2c.reading(self.I2C_ADDR, self.BLEN_EEPROM_REG))
-            print("Value at Reg %02x = %d" %(reg,readValue[0][0]))    
-            print("Value at Reg %02x in hex = 0x%02x" %(reg,readValue[0][0]))    
+            readValue = bus.read_i2c_block_data(reg, self.BLEN_EEPROM_REG)            
+            print("Value at Reg %02x = %d" %(reg,readValue[0]))    
+            print("Value at Reg %02x in hex = 0x%02x" %(reg,readValue[0]))   
+
+        #old
+        # with i2c.I2CMaster() as bus:
+        #     bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.READ_EEPROM, reg))
+        #     sleep(self.TD_READ_EEPROM)
+        #     readValue = bus.transaction(i2c.reading(self.I2C_ADDR, self.BLEN_EEPROM_REG))
+        #     print("Value at Reg %02x = %d" %(reg,readValue[0][0]))    
+        #     print("Value at Reg %02x in hex = 0x%02x" %(reg,readValue[0][0]))    
 
     def writeEEPROM(self, reg, value):
         sleep(self.TD_DEFAULT)
-        with i2c.I2CMaster() as bus:
-            bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.WRITE_EEPROM, reg, value))
+        with smbus2.SMBusWrapper(1) as bus:
+            bus.write_i2c_block_data(self.I2C_ADDR, 0, self.WRITE_EEPROM, reg, value)
             sleep(self.TD_WRITE_EEPROM)
 
-            bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.READ_EEPROM, reg))
+            bus.write_i2c_block_data(self.I2C_ADDR, 0, self.READ_EEPROM, reg)
             sleep(self.TD_READ_EEPROM)
-            readValue = bus.transaction(i2c.reading(self.I2C_ADDR, self.BLEN_EEPROM_REG))
+            readValue = bus.read_i2c_block_data(self.I2C_ADDR, 0, self.BLEN_EEPROM_REG)
 
             if(readValue[0][0] == value):
                 print("Reg 0x%02x written with 0x%02x successfully" %(reg, readValue[0][0]))
             else:
                 print("Write not successful")
+
+
+
+        # sleep(self.TD_DEFAULT)
+        # with i2c.I2CMaster() as bus:
+        #     bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.WRITE_EEPROM, reg, value))
+        #     sleep(self.TD_WRITE_EEPROM)
+
+        #     bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.READ_EEPROM, reg))
+        #     sleep(self.TD_READ_EEPROM)
+        #     readValue = bus.transaction(i2c.reading(self.I2C_ADDR, self.BLEN_EEPROM_REG))
+
+        #     if(readValue[0][0] == value):
+        #         print("Reg 0x%02x written with 0x%02x successfully" %(reg, readValue[0][0]))
+        #     else:
+        #         print("Write not successful")
 
                 
     def readFilterValue(self):
@@ -225,27 +250,27 @@ class HMC6343(object):
             return heading
 
 
+            #old
+        # sleep(self.TD_DEFAULT)
+        # with i2c.I2CMaster() as bus:
+        #     bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.POST_HEADING))
+        #     sleep(self.TD_POST_DATA)
+        #     readValues = bus.transaction(i2c.reading(self.I2C_ADDR, self.BLEN_POST_DATA))
+            
+        #     heading = (256*readValues[0][0] + readValues[0][1])/10.0
+            
+        #     pitch = (256*readValues[0][2] + readValues[0][3])
+        #     if(pitch & 0x01<<15 != 0x00):
+        #         pitch = (-(self.MAX_16_BIT+1) + pitch)
+        #     pitch = pitch/10.0
+            
+        #     roll = (256*readValues[0][4] + readValues[0][5])
+        #     if(roll & 0x01<<15 != 0x00):
+        #         roll = (-(self.MAX_16_BIT+1) + roll)
+        #     roll = roll/10.0
 
-        sleep(self.TD_DEFAULT)
-        with i2c.I2CMaster() as bus:
-            bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.POST_HEADING))
-            sleep(self.TD_POST_DATA)
-            readValues = bus.transaction(i2c.reading(self.I2C_ADDR, self.BLEN_POST_DATA))
-            
-            heading = (256*readValues[0][0] + readValues[0][1])/10.0
-            
-            pitch = (256*readValues[0][2] + readValues[0][3])
-            if(pitch & 0x01<<15 != 0x00):
-                pitch = (-(self.MAX_16_BIT+1) + pitch)
-            pitch = pitch/10.0
-            
-            roll = (256*readValues[0][4] + readValues[0][5])
-            if(roll & 0x01<<15 != 0x00):
-                roll = (-(self.MAX_16_BIT+1) + roll)
-            roll = roll/10.0
-
-            print("Heading = %f" %heading)
-            return heading
+        #     print("Heading = %f" %heading)
+        #     return heading
 
     def readTilt(self):
         sleep(self.TD_DEFAULT)
@@ -379,8 +404,9 @@ class HMC6343(object):
 
     def exitSleep(self):
         sleep(self.TD_DEFAULT)
-        with i2c.I2CMaster() as bus:
-            bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.EXIT_SLEEP))
+
+        with smbus2.SMBusWrapper(1) as bus:
+            bus.write_i2c_block_data(self.I2C_ADDR, 0, [self.EXIT_SLEEP])
             sleep(self.TD_EXIT_SLEEP)
 
             OPMode1 = self.readOPMode1()
@@ -389,6 +415,19 @@ class HMC6343(object):
                 print("Failed to exit sleep mode")
             else:        
                 print("Exited sleep mode")    
+
+
+        #old
+        # with i2c.I2CMaster() as bus:
+        #     bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.EXIT_SLEEP))
+        #     sleep(self.TD_EXIT_SLEEP)
+
+        #     OPMode1 = self.readOPMode1()
+
+        #     if(OPMode1 & 0x18 == 0):
+        #         print("Failed to exit sleep mode")
+        #     else:        
+        #         print("Exited sleep mode")    
 
 
     def selectMode(self, mode):
