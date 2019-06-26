@@ -312,7 +312,7 @@ class SMBus(object):
         ioctl(self.fd, I2C_SMBUS, msg)
         return msg.data.contents.byte
 
-    def read_bytes(self, i2c_addr, length, force=None):
+    def read_bytes(self, i2c_addr, length=1, force=None):
         """
         Read a multiple bytes from a device.
 
@@ -321,7 +321,7 @@ class SMBus(object):
             raise ValueError("Desired block length over %d bytes" % I2C_SMBUS_BLOCK_MAX)
         self._set_address(i2c_addr, force=force)
         msg = i2c_smbus_ioctl_data.create(
-            read_write=I2C_SMBUS_READ, command=0, size=3
+            read_write=I2C_SMBUS_READ, command=0, size=length
         )
         ioctl(self.fd, I2C_SMBUS, msg)
         print("MESSAGE: ")
