@@ -241,7 +241,7 @@ class HMC6343(object):
                 pitch = (-(self.MAX_16_BIT+1) + pitch)
             pitch = pitch/10.0
             
-            roll = (256*readValues[4] + readValues[0][5])
+            roll = (256*readValues[4] + readValues[5])
             if(roll & 0x01<<15 != 0x00):
                 roll = (-(self.MAX_16_BIT+1) + roll)
             roll = roll/10.0
