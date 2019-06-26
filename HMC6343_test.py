@@ -6,7 +6,7 @@
 
 # import quick2wire.i2c as i2c
 from time import sleep
-import smbus2
+import smbus_readBytes
 
 __author__ = "Chethan Shettar"
 __copyright__ = "Copyright 2016, Meuleman Electronics"
@@ -110,7 +110,7 @@ class HMC6343(object):
     def readEEPROM(self, reg):
         sleep(self.TD_DEFAULT)
 
-        with smbus2.SMBusWrapper(1) as bus:
+        with smbus_readBytes.SMBusWrapper(1) as bus:
             bus.write_i2c_block_data(self.I2C_ADDR, 0, [self.READ_EEPROM]) #not sure about this one
             sleep(self.TD_READ_EEPROM)
             readValue = bus.read_i2c_block_data(reg, self.BLEN_EEPROM_REG)            
@@ -127,7 +127,7 @@ class HMC6343(object):
 
     def writeEEPROM(self, reg, value):
         sleep(self.TD_DEFAULT)
-        with smbus2.SMBusWrapper(1) as bus:
+        with smbus_readBytes.SMBusWrapper(1) as bus:
             bus.write_i2c_block_data(self.I2C_ADDR, 0, self.WRITE_EEPROM, reg, value)
             sleep(self.TD_WRITE_EEPROM)
 
@@ -227,16 +227,14 @@ class HMC6343(object):
 
 
         sleep(self.TD_DEFAULT)
-        with smbus2.SMBusWrapper(1) as bus:
+        with smbus_readBytes.SMBusWrapper(1) as bus:
 
             bus.write_byte(self.I2C_ADDR,self.POST_HEADING)
             sleep(self.TD_POST_DATA)
             # readValues = bus.read_byte(self.I2C_ADDR)
-            readValues = bus.read_i2c_block_data(self.I2C_ADDR, 0 , self.BLEN_POST_DATA)
+            readValues = bus.read_bytes(self.I2C_ADDR, self.BLEN_POST_DATA)
             print("readVals: ", readValues)
 
-            temp = bus.read_i2c_block_data(self.POST_HEADING, 0, self.BLEN_POST_DATA)
-            print('temp: ', temp)
 
             heading = (256*readValues[0] + readValues[1])/10.0
 
@@ -321,7 +319,7 @@ class HMC6343(object):
     def readOPMode1(self):
         sleep(self.TD_DEFAULT)
 
-        with smbus2.SMBusWrapper(1) as bus:
+        with smbus_readBytes.SMBusWrapper(1) as bus:
             bus.write_byte(self.I2C_ADDR, self.POST_OPMODE1)
             sleep(self.TD_POST_DATA)
             readValues = bus.read_byte(self.I2C_ADDR)
@@ -343,7 +341,7 @@ class HMC6343(object):
         successFlag = 1
 
 
-        with smbus2.SMBusWrapper(1) as bus:
+        with smbus_readBytes.SMBusWrapper(1) as bus:
             bus.write_byte(self.I2C_ADDR, orientation)
             sleep(self.TD_SET_ORIENTATION)
 
@@ -395,7 +393,7 @@ class HMC6343(object):
     def enterSleep(self):
         sleep(self.TD_DEFAULT)
 
-        with smbus2.SMBusWrapper(1) as bus:
+        with smbus_readBytes.SMBusWrapper(1) as bus:
             bus.write_i2c_block_data(self.I2C_ADDR, 0, [self.ENTER_SLEEP])
             sleep(self.TD_ENTER_SLEEP)
             print("Entered sleep mode")
@@ -410,7 +408,7 @@ class HMC6343(object):
     def exitSleep(self):
         sleep(self.TD_DEFAULT)
 
-        with smbus2.SMBusWrapper(1) as bus:
+        with smbus_readBytes.SMBusWrapper(1) as bus:
             bus.write_i2c_block_data(self.I2C_ADDR, 0, [self.EXIT_SLEEP])
             sleep(self.TD_EXIT_SLEEP)
 
@@ -442,7 +440,7 @@ class HMC6343(object):
             enterSleep()
             return
         else:
-            with smbus2.SMBusWrapper(1) as bus:
+            with smbus_readBytes.SMBusWrapper(1) as bus:
                 bus.write_byte(self.I2C_ADDR, mode)
                 sleep(self.TD_ENTER_MODE)
 
