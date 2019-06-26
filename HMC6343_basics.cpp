@@ -31,7 +31,7 @@ Distributed as-is; no warranty is given.
 ******************************************************************************/
 
 // Libraries for I2C and the HMC6343 sensor
-#include <Wire.h>
+#include "Wire.h"
 #include "SFE_HMC6343.h"
 
 SFE_HMC6343 compass; // Declare the sensor object
