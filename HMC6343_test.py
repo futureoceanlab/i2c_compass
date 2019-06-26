@@ -364,6 +364,7 @@ class HMC6343(object):
                 print("Failed to set orientation")
             else:
                 print("Orientation set successfully")  
+            print("Orientation: ", orientation)
 
 
         #old
