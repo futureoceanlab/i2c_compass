@@ -234,6 +234,8 @@ class HMC6343(object):
             readValues = bus.read_i2c_block_data(self.I2C_ADDR, 0 , self.BLEN_POST_DATA)
             print("readVals: ", readValues)
 
+            temp = bus.read_i2c_block_data(self.POST_HEADING, 0, self.BLEN_POST_DATA)
+
             heading = (256*readValues[0] + readValues[1])/10.0
 
             pitch = (256*readValues[2] + readValues[3])
