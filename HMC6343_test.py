@@ -321,9 +321,9 @@ class HMC6343(object):
         sleep(self.TD_DEFAULT)
 
         with smbus2.SMBusWrapper(1) as bus:
-            bus.write_i2c_block_data(self.I2C_ADDR, 0, [self.POST_OPMODE1])
+            bus.write_byte(self.I2C_ADDR, self.POST_OPMODE1)
             sleep(self.TD_POST_DATA)
-            readValues = bus.read_i2c_block_data(self.I2C_ADDR, 0 , self.BLEN_EEPROM_REG)
+            readValues = bus.read_byte(self.I2C_ADDR)
             print("Value of OpMode1= 0x%02x" %readValues[0])
             return readValues[0]
 
@@ -343,7 +343,7 @@ class HMC6343(object):
 
 
         with smbus2.SMBusWrapper(1) as bus:
-            bus.write_i2c_block_data(self.I2C_ADDR, 0, [orientation])
+            bus.write_byte(self.I2C_ADDR, orientation)
             sleep(self.TD_SET_ORIENTATION)
 
             OPMode1 = self.readOPMode1()
@@ -441,7 +441,7 @@ class HMC6343(object):
             return
         else:
             with smbus2.SMBusWrapper(1) as bus:
-                bus.write_i2c_block_data(self.I2C_ADDR, 0, [mode])
+                bus.write_byte(self.I2C_ADDR, mode)
                 sleep(self.TD_ENTER_MODE)
 
                 OPMode1 = self.readOPMode1()
