@@ -312,7 +312,7 @@ class SMBus(object):
         ioctl(self.fd, I2C_SMBUS, msg)
         return msg.data.contents.byte
 
-    def read_bytes(self, i2c_addr, length=1, force=None):
+    def read_bytes(self, i2c_addr, length, force=None):
         """
         Read a multiple bytes from a device.
 
