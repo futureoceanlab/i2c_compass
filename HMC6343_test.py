@@ -204,7 +204,7 @@ class HMC6343(object):
         sleep(self.TD_DEFAULT)
         with smbus2.SMBusWrapper(1) as bus:
 
-            temporary_data_write = bus.write_i2c_block_data(self.I2C_ADDR, 0, self.POST_HEADING)
+            bus.write_i2c_block_data(self.I2C_ADDR, 0, self.POST_HEADING)
             sleep(self.TD_POST_DATA)
             readValues = bus.read_i2c_block_data(self.I2C_ADDR, 0 , self.BLEN_POST_DATA)
             print("readVals: ", readValues)
@@ -216,7 +216,7 @@ class HMC6343(object):
                 pitch = (-(self.MAX_16_BIT+1) + pitch)
             pitch = pitch/10.0
             
-            roll = (256*readValues[4] + readValues[5])
+            roll = (256*readValues[4] + readValues[0][5])
             if(roll & 0x01<<15 != 0x00):
                 roll = (-(self.MAX_16_BIT+1) + roll)
             roll = roll/10.0
@@ -293,27 +293,29 @@ class HMC6343(object):
         sleep(self.TD_DEFAULT)
 
         with smbus2.SMBusWrapper(1) as bus:
-            temporary_data_write = bus.write_i2c_block_data(self.I2C_ADDR, 0, self.POST_OPMODE1)
+            bus.write_i2c_block_data(self.I2C_ADDR, 0, self.POST_OPMODE1)
             sleep(self.TD_POST_DATA)
             readValues = bus.read_i2c_block_data(self.I2C_ADDR, 0 , self.BLEN_EEPROM_REG)
-            print("Value of OpMode1= 0x%02x" %readValues[0][0])
-            return readValues[0][0]
+            print("Value of OpMode1= 0x%02x" %readValues[0])
+            return readValues[0]
 
 
+        #old
+        # with i2c.I2CMaster() as bus:
+        #     bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.POST_OPMODE1))
+        #     sleep(self.TD_POST_DATA)
+        #     readValues = bus.transaction(i2c.reading(self.I2C_ADDR, self.BLEN_EEPROM_REG))
 
-        with i2c.I2CMaster() as bus:
-            bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.POST_OPMODE1))
-            sleep(self.TD_POST_DATA)
-            readValues = bus.transaction(i2c.reading(self.I2C_ADDR, self.BLEN_EEPROM_REG))
-
-            print("Value of OpMode1= 0x%02x" %readValues[0][0])
-            return readValues[0][0]
+        #     print("Value of OpMode1= 0x%02x" %readValues[0][0])
+        #     return readValues[0][0]
 
     def setOrientation(self, orientation):
         sleep(self.TD_DEFAULT)
         successFlag = 1
-        with i2c.I2CMaster() as bus:
-            bus.transaction(i2c.writing_bytes(self.I2C_ADDR, orientation))
+
+
+        with smbus2.SMBusWrapper(1) as bus:
+            bus.write_i2c_block_data(self.I2C_ADDR, 0, orientation)
             sleep(self.TD_SET_ORIENTATION)
 
             OPMode1 = self.readOPMode1()
@@ -333,14 +335,47 @@ class HMC6343(object):
             if(successFlag == 0):
                 print("Failed to set orientation")
             else:
-                print("Orientation set successfully")        
+                print("Orientation set successfully")  
+
+
+        #old
+        # with i2c.I2CMaster() as bus:
+        #     bus.transaction(i2c.writing_bytes(self.I2C_ADDR, orientation))
+        #     sleep(self.TD_SET_ORIENTATION)
+
+        #     OPMode1 = self.readOPMode1()
+
+        #     if(orientation == self.ORIENT_LEVEL):
+        #         if(OPMode1 & 0x01 == 0):
+        #             successFlag = 0
+        #     elif(orientation == self.ORIENT_SIDEWAYS):
+        #         if(OPMode1 & 0x02 == 0):
+        #             successFlag = 0        
+        #     elif(orientation == self.ORIENT_FLATFRONT):
+        #         if(OPMode1 & 0x04 == 0):
+        #             successFlag = 0        
+        #     else:
+        #         print("Orientation value not valid")
+
+        #     if(successFlag == 0):
+        #         print("Failed to set orientation")
+        #     else:
+        #         print("Orientation set successfully")        
 
     def enterSleep(self):
         sleep(self.TD_DEFAULT)
-        with i2c.I2CMaster() as bus:
-            bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.ENTER_SLEEP))
+
+        with smbus2.SMBusWrapper(1) as bus:
+            bus.write_i2c_block_data(self.I2C_ADDR, 0, [self.ENTER_SLEEP])
             sleep(self.TD_ENTER_SLEEP)
             print("Entered sleep mode")
+
+
+        #old
+        # with i2c.I2CMaster() as bus:
+        #     bus.transaction(i2c.writing_bytes(self.I2C_ADDR, self.ENTER_SLEEP))
+        #     sleep(self.TD_ENTER_SLEEP)
+        #     print("Entered sleep mode")
 
     def exitSleep(self):
         sleep(self.TD_DEFAULT)
@@ -364,30 +399,7 @@ class HMC6343(object):
             return
         else:
             with smbus2.SMBusWrapper(1) as bus:
-                temporary_data_write = bus.write_i2c_block_data(self.I2C_ADDR, 0, [mode])
-                sleep(self.TD_ENTER_MODE)
-
-                OPMode1 = self.readOPMode1
-
-                if(mode == self.ENTER_RUN):
-                    if(OPMode1 & 0x10 == 0):
-                        successFlag = 0
-                elif(mode == self.ENTER_STANDBY):
-                    if(OPMode1 & 0x08 == 0):
-                        successFlag = 0          
-                else:
-                    print("Mode value not valid")
-
-                if(successFlag == 0):
-                    print("Failed to set mode")
-                else:
-                    print("Mode set successfully") 
-
-
-
-            print("HEREREREREREKLJ:LJ:J:KJ:KJ:J:KJ:J:J")
-            with i2c.I2CMaster() as bus:
-                bus.transaction(i2c.writing_bytes(self.I2C_ADDR, mode))
+                bus.write_i2c_block_data(self.I2C_ADDR, 0, [mode])
                 sleep(self.TD_ENTER_MODE)
 
                 OPMode1 = self.readOPMode1()
@@ -404,7 +416,30 @@ class HMC6343(object):
                 if(successFlag == 0):
                     print("Failed to set mode")
                 else:
-                    print("Mode set successfully")            
+                    print("Mode set successfully") 
+
+            print("finished select mode successfully")
+
+            #old
+            # with i2c.I2CMaster() as bus:
+            #     bus.transaction(i2c.writing_bytes(self.I2C_ADDR, mode))
+            #     sleep(self.TD_ENTER_MODE)
+
+            #     OPMode1 = self.readOPMode1()
+
+            #     if(mode == self.ENTER_RUN):
+            #         if(OPMode1 & 0x10 == 0):
+            #             successFlag = 0
+            #     elif(mode == self.ENTER_STANDBY):
+            #         if(OPMode1 & 0x08 == 0):
+            #             successFlag = 0          
+            #     else:
+            #         print("Mode value not valid")
+
+            #     if(successFlag == 0):
+            #         print("Failed to set mode")
+            #     else:
+            #         print("Mode set successfully")            
 
     def filterMode(self, switchValue):  #valid values are IIR_FILTER_ON/IIR_FILTER_OFF
         sleep(self.TD_DEFAULT)
